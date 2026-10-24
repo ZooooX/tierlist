@@ -22,6 +22,11 @@ npm run build
 
 Le dossier `dist/` est un site statique (chemins relatifs) : il peut être posé sur n'importe quel hébergeur statique.
 
+## Mise en ligne (GitHub Pages)
+
+Le workflow `.github/workflows/deploy.yml` construit et publie le site à chaque push sur `main`.
+À faire une fois sur GitHub : **Settings → Pages → Source : GitHub Actions**.
+
 ## Calcul
 
 - Moyenne d'un jeu : moyenne des critères notés de ce jeu.
