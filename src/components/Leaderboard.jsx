@@ -1,4 +1,5 @@
 import { fmt } from '../lib/scoring.js';
+import Avatar from './Avatar.jsx';
 
 // showBarValues : dans l'onglet Général, chaque barre est la moyenne d'un jeu, on affiche le chiffre.
 export default function Leaderboard({ entries, showBarValues = false }) {
@@ -9,7 +10,10 @@ export default function Leaderboard({ entries, showBarValues = false }) {
         <li key={r.id} className={'row' + (r.score == null ? ' empty' : '')} data-place={r.place ?? ''}>
           <div className="pos">{r.place ?? '–'}</div>
           <div className="who">
-            <div className="name">{r.name}</div>
+            <div className="name-line">
+              <Avatar src={r.avatar} name={r.name} className="row-avatar" />
+              <span className="name">{r.name}</span>
+            </div>
             <div className="bars">
               {r.chips.map(
                 (c) =>

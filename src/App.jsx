@@ -112,7 +112,7 @@ export default function App() {
       )}
 
       {current === 'settings' ? (
-        <Settings config={config} update={update} onExport={exportConfig} onImport={importConfig} onReset={resetConfig} onClearScores={wipeScores} />
+        <Settings config={config} update={update} notify={notify} onExport={exportConfig} onImport={importConfig} onReset={resetConfig} onClearScores={wipeScores} />
       ) : game ? (
         <GameView config={config} game={game} update={update} view={view} onView={setView} notify={notify} />
       ) : (

@@ -1,5 +1,6 @@
 // Modèle de données : une seule config contient la structure (amis, jeux, critères) et les notes.
 // Les notes sont indexées par id pour survivre aux renommages et aux réordonnancements.
+import { isAvatar } from './avatar.js';
 
 export const MAX_SCORE = 100;
 export const LIMITS = { friends: 50, games: 12, criteria: 12, globals: 6 };
@@ -44,7 +45,11 @@ export function normalize(raw) {
   const gameId = idMaker('g');
   const globalId = idMaker('x');
 
-  const friends = raw.friends.slice(0, LIMITS.friends).map((f) => ({ id: friendId(f?.id), name: text(f?.name) }));
+  const friends = raw.friends.slice(0, LIMITS.friends).map((f) => ({
+    id: friendId(f?.id),
+    name: text(f?.name),
+    avatar: isAvatar(f?.avatar) ? f.avatar : null,
+  }));
 
   const games = raw.games.slice(0, LIMITS.games).map((g, gi) => {
     const label = text(g?.label) || 'Jeu ' + (gi + 1);

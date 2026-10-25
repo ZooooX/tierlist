@@ -1,4 +1,47 @@
+import { useState } from 'react';
 import { LIMITS, PALETTE, shortOf, uid } from '../lib/config.js';
+import { fileToAvatar } from '../lib/avatar.js';
+import Avatar from './Avatar.jsx';
+
+// Choix de l'avatar : l'image est réduite dans le navigateur et reste dans la config locale.
+function AvatarPicker({ friend, index, onChange, notify }) {
+  const [busy, setBusy] = useState(false);
+  const who = friend.name || 'ami ' + (index + 1);
+  const pick = async (file) => {
+    setBusy(true);
+    try {
+      onChange(await fileToAvatar(file));
+    } catch (e) {
+      notify(`Avatar non ajouté : ${e.message}.`, 'error');
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="avatar-pick">
+      <label className={'avatar-btn' + (busy ? ' busy' : '')} title={friend.avatar ? "Changer l'avatar" : 'Ajouter un avatar'}>
+        <Avatar src={friend.avatar} name={friend.name} />
+        <input
+          id={`avatar-${friend.id}`}
+          type="file"
+          accept="image/*"
+          aria-label={`${friend.avatar ? "Changer l'avatar" : 'Ajouter un avatar'} de ${who}`}
+          disabled={busy}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = '';
+            if (file) pick(file);
+          }}
+        />
+      </label>
+      {friend.avatar && (
+        <button className="avatar-clear" onClick={() => onChange(null)} aria-label={`Retirer l'avatar de ${who}`} title="Retirer l'avatar">
+          ✕
+        </button>
+      )}
+    </div>
+  );
+}
 
 function move(arr, i, dir) {
   const j = i + dir;
@@ -41,11 +84,11 @@ function NumberField({ id, label, value, step, min, onChange }) {
   );
 }
 
-export default function Settings({ config, update, onExport, onImport, onReset, onClearScores }) {
+export default function Settings({ config, update, notify, onExport, onImport, onReset, onClearScores }) {
   // --- amis
   const addFriend = () => update((c) => {
     const id = uid('f');
-    c.friends.push({ id, name: '' });
+    c.friends.push({ id, name: '', avatar: null });
     for (const g of c.games) c.scores[g.id][id] = Object.fromEntries(g.criteria.map((k) => [k.id, null]));
     for (const x of c.globals) c.globalScores[x.id][id] = null;
   });
@@ -125,6 +168,7 @@ export default function Settings({ config, update, onExport, onImport, onReset, 
           {config.friends.map((f, i) => (
             <li key={f.id}>
               <span className="slot">{i + 1}</span>
+              <AvatarPicker friend={f} index={i} notify={notify} onChange={(url) => update((c) => { c.friends[i].avatar = url; })} />
               <input
                 id={`friend-${f.id}`}
                 type="text"
@@ -293,7 +337,10 @@ export default function Settings({ config, update, onExport, onImport, onReset, 
 
       <section className="panel">
         <h2 className="label">Données</h2>
-        <p className="hint">Tout est enregistré automatiquement dans ce navigateur, rien n'est envoyé sur internet. Exporte la config pour la sauvegarder ou l'envoyer à un pote.</p>
+        <p className="hint">
+          Tout est enregistré automatiquement dans ce navigateur, avatars compris : rien n'est envoyé sur internet. Exporte la config pour la
+          sauvegarder ou l'envoyer à un pote ; le fichier contient aussi les avatars.
+        </p>
         <div className="toolbar">
           <button className="btn" onClick={onExport}>
             Exporter la config

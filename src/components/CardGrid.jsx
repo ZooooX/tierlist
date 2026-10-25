@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { fmt, tierFor } from '../lib/scoring.js';
 import { canShareFiles, copyImage, downloadBlob, nodeToPng, slug, today } from '../lib/files.js';
+import Avatar from './Avatar.jsx';
 
 function PlayerCard({ entry, tag }) {
   const tier = tierFor(entry.score);
@@ -17,14 +18,15 @@ function PlayerCard({ entry, tag }) {
   return (
     <article className={'pcard t-' + tier.id}>
       <div className="pc-top">
-        <div className="pc-ovr">
-          {fmt(entry.score)}
-          <small>{tag}</small>
-        </div>
         <div className="pc-side">
+          <div className="pc-ovr">
+            {fmt(entry.score)}
+            <small>{tag}</small>
+          </div>
           <span className="pc-rank">{entry.place ? '#' + entry.place : '–'}</span>
           <span className="pc-tier">{tier.label}</span>
         </div>
+        <Avatar src={entry.avatar} name={entry.name} className="pc-avatar" />
       </div>
       <h3 className="pc-name">{entry.name}</h3>
       <dl className="pc-stats">
